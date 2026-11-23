@@ -1,5 +1,11 @@
 # Runeglow
 
+## 1.0.1
+
+- **Fixed**: opening Runeglow's options could break the search bar in Blizzard's *Options* window
+  (an "action blocked" / tainted Settings error). Runeglow's options are now registered the way the
+  game expects, so the Settings search keeps working.
+
 ## 1.0.0
 
 First release.
