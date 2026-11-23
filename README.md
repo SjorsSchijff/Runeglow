@@ -10,13 +10,15 @@ Made for **World of Warcraft: Forever**.
 
 | Proc | From | What it does |
 | --- | --- | --- |
-| **Revelation** | Weapon enchant | Your next non-periodic spell gets 100% more crit chance |
+| **Revelation** | Weapon enchant | Your next non-periodic spell gets 100% more crit chance (15 sec) |
 | **Insight** | Weapon enchant | +100% Spirit for 10 seconds |
-| **Recovery** | Weapon enchant | Heals you for 5% of your health when you are dodged or parried |
-| **Molten Heart of the Mountain** | Trinket | +55 attack power, doubled in volcanic areas |
-| **Frozen Heart of the Mountain** | Trinket | Up to +29 Frost and Shadow spell damage, doubled in snowy areas |
-| **Dormant Heart of the Mountain** | Trinket | Up to +40 healing and +13 damage |
+| **Molten Fury** | Molten Heart of the Mountain (trinket) | +55 attack power, doubled in volcanic areas |
+| **Chthonic Power** | Frozen Heart of the Mountain (trinket) | Up to +29 Frost and Shadow spell damage, doubled in snowy areas |
+| **Eternal Power** | Dormant Heart of the Mountain (trinket) | Up to +40 healing and +13 damage |
 | **Holy Strength** | Crusader | +100 Strength for 15 seconds |
+
+Every icon is the buff's own icon from the game. **Recovery** (weapon enchant) is in the options too, but
+it is an instant heal that leaves no buff, so it is off by default and has nothing to show.
 
 Track any other buff with `/runeglow add <buff name>`.
 
@@ -49,11 +51,10 @@ Track any other buff with `/runeglow add <buff name>`.
 
 ## Good to know
 
-- **Buffs are matched by their English name.** If a proc never lights up, run `/runeglow scan` while it
-  is active, then `/runeglow add` the exact name it shows.
+- **Built-in procs are found by spell ID**, so they work in any client language. Buffs you add yourself
+  are matched by name: run `/runeglow scan` while one is active, then `/runeglow add` the exact name.
 - **In combat the game may hide buffs from addons.** When that happens, an icon that is already showing
   keeps counting down on its last known timer, and everything is checked again when combat ends.
-- **Recovery** is an instant heal. If the game gives it no buff, there is nothing to show.
 
 ## Releasing
 

@@ -5,13 +5,16 @@
 -- its own movable icon with the countdown inside; unticked procs and any buff
 -- names you add share a row of smaller icons instead.
 --
--- ## Matching by name
+-- ## Finding the buffs
 --
 -- The spell IDs Forever's enchants are known by (Insight 1248757, Revelation
 -- 1248805, Recovery 1248760) are the enchanting casts, not the buffs they
--- proc, so the buffs are looked up by name with GetAuraDataBySpellName, which
--- covers every rank. The names are the English ones; `/runeglow scan` lists
--- the buffs on you by name to find the exact name of a proc.
+-- proc. The buffs' own IDs, names and icons below come from Wowhead's Forever
+-- database. A proc with a `spellID` is read with GetPlayerAuraBySpellID, which
+-- also keeps it apart from passives of the same name (Dormant Heart's equip
+-- effect is called Eternal Power too). Revelation has a buff per class, so it
+-- is read by name; `predicateID` is one of its IDs, for asking C_Secrets.
+-- Buffs added with /runeglow add are read by name.
 --
 -- ## Secret auras
 --
@@ -24,58 +27,70 @@
 
 local _, RG = ...
 
--- `icon` is only a fallback, for the preview and for a buff whose own icon
--- cannot be read.
+-- `name` is the buff's own name and `icon` its own icon, as the game shows
+-- them. A live buff's icon is read from the buff; this one is for the preview
+-- and for a buff whose icon the game hides. `alias` is another name players
+-- know it by, accepted by /runeglow add and remove.
 RG.KNOWN = {
 	{
 		key = "revelation",
 		name = "Revelation",
+		predicateID = 1323392,
 		label = "Revelation (weapon)",
-		tooltip = "When a non-periodic spell fails to crit: your next non-periodic spell has 100% more crit chance. Used up by that spell.",
-		icon = "Interface\\Icons\\Spell_Holy_SurgeOfLight",
+		tooltip = "When a non-periodic spell fails to crit: your next non-periodic spell has 100% more crit chance, for 15 seconds or until that spell.",
+		icon = "Interface\\Icons\\Spell_Holy_MindVision",
 	},
 	{
 		key = "insight",
 		name = "Insight",
+		spellID = 1299796,
 		label = "Insight (weapon)",
-		tooltip = "A chance on spell cast to raise your Spirit by 100% for 10 seconds.",
-		icon = "Interface\\Icons\\Spell_Holy_MindVision",
+		tooltip = "35% chance on spell cast (45 second cooldown): Spirit +100% for 10 seconds.",
+		icon = "Interface\\Icons\\Spell_Arcane_MindMastery",
 	},
 	{
 		key = "recovery",
 		name = "Recovery",
+		spellID = 1248759,
 		label = "Recovery (weapon)",
-		tooltip = "Heals you for 5% of your health when an attack of yours is dodged or parried. If it leaves no buff on you, it never shows: use /runeglow scan right after it heals you to check.",
-		icon = "Interface\\Icons\\Spell_Holy_Renew",
+		tooltip = "Heals you for 5% of your health when an attack of yours is dodged or parried (10 second cooldown). It is an instant heal that leaves no buff, so it has nothing to show; it is off by default.",
+		icon = "Interface\\Icons\\Spell_Arcane_MindMastery",
+		off = true,
 	},
 	{
 		key = "holyStrength",
 		name = "Holy Strength",
+		spellID = 20007,
 		label = "Holy Strength (Crusader)",
 		tooltip = "Crusader's proc: +100 Strength for 15 seconds.",
 		icon = "Interface\\Icons\\Spell_Holy_BlessingOfStrength",
 	},
-	-- The buff names are assumed to match the item names.
 	{
 		key = "moltenHeart",
-		name = "Molten Heart of the Mountain",
-		label = "Molten Heart of the Mountain (trinket)",
-		tooltip = "+55 attack power for 15 seconds, doubled in volcanic areas.",
-		icon = "Interface\\Icons\\INV_Elemental_Primal_Fire",
+		name = "Molten Fury",
+		alias = "Molten Heart of the Mountain",
+		spellID = 1249113,
+		label = "Molten Fury (Molten Heart of the Mountain)",
+		tooltip = "Trinket use: +55 attack power for 15 seconds, doubled in volcanic areas.",
+		icon = "Interface\\Icons\\INV_Misc_Gem_Ruby_01",
 	},
 	{
 		key = "frozenHeart",
-		name = "Frozen Heart of the Mountain",
-		label = "Frozen Heart of the Mountain (trinket)",
-		tooltip = "Up to +29 Frost and Shadow spell damage for 15 seconds, doubled in snowy areas.",
-		icon = "Interface\\Icons\\INV_Elemental_Primal_Water",
+		name = "Chthonic Power",
+		alias = "Frozen Heart of the Mountain",
+		spellID = 1249110,
+		label = "Chthonic Power (Frozen Heart of the Mountain)",
+		tooltip = "Trinket use: up to +29 Frost and Shadow spell damage for 15 seconds, doubled in snowy areas.",
+		icon = "Interface\\Icons\\INV_Misc_Gem_Sapphire_01",
 	},
 	{
 		key = "dormantHeart",
-		name = "Dormant Heart of the Mountain",
-		label = "Dormant Heart of the Mountain (trinket)",
-		tooltip = "Up to +40 healing and +13 damage for 15 seconds, from casting Greater Heal, Healing Touch, Healing Wave or Holy Light in combat.",
-		icon = "Interface\\Icons\\INV_Elemental_Primal_Earth",
+		name = "Eternal Power",
+		alias = "Dormant Heart of the Mountain",
+		spellID = 1249119,
+		label = "Eternal Power (Dormant Heart of the Mountain)",
+		tooltip = "Trinket equip: casting Greater Heal, Healing Touch, Healing Wave or Holy Light in combat gives up to +40 healing and +13 damage for 15 seconds.",
+		icon = "Interface\\Icons\\INV_Misc_Gem_Diamond_01",
 	},
 }
 local KNOWN = RG.KNOWN
@@ -101,7 +116,7 @@ local DEFAULTS = {
 -- Side by side above the row, so none starts on top of another.
 local ALERT_SPACING = 76
 for index, known in ipairs(KNOWN) do
-	DEFAULTS.tracked[known.key] = true
+	DEFAULTS.tracked[known.key] = not known.off
 	DEFAULTS.alerts[known.key] = {
 		separate = true,
 		point = { point = "CENTER", relPoint = "CENTER", x = (index - (#KNOWN + 1) / 2) * ALERT_SPACING, y = -90 },
@@ -134,10 +149,11 @@ local function Trim(text)
 	return (text:gsub("^%s+", ""):gsub("%s+$", ""))
 end
 
--- Whether name is one of KNOWN (any case).
+-- Whether name is one of KNOWN, by buff name or alias (any case).
 local function KnownByName(name)
+	name = name:lower()
 	for _, known in ipairs(KNOWN) do
-		if known.name:lower() == name:lower() then
+		if known.name:lower() == name or (known.alias and known.alias:lower() == name) then
 			return known
 		end
 	end
@@ -188,14 +204,16 @@ local function BuildEntries()
 	end
 
 	entries = {}
-	local function add(name, icon, key)
+	local function add(name, icon, key, spellID, predicateID)
 		local entry = previous[name] or { name = name, state = "unknown" }
-		entry.fallbackIcon, entry.key = icon, key
+		entry.fallbackIcon, entry.key, entry.spellID = icon, key, spellID
+		-- C_Secrets wants a spell it can resolve; an ID always can.
+		entry.secretQuery = spellID or predicateID or name
 		entries[#entries + 1] = entry
 	end
 	for _, known in ipairs(KNOWN) do
 		if cfg.tracked[known.key] then
-			add(known.name, known.icon, known.key)
+			add(known.name, known.icon, known.key, known.spellID, known.predicateID)
 		end
 	end
 	for _, name in ipairs(cfg.extra) do
@@ -217,9 +235,15 @@ local function IsAvailable()
 end
 
 -- Runs inside RG.GuardedRead. Returns present, icon, expiration, applications,
--- all plain values: each test that could meet a secret happens here.
-local function ReadBuff(name)
-	local data = C_UnitAuras.GetAuraDataBySpellName("player", name, "HELPFUL")
+-- all plain values: each test that could meet a secret happens here. By spell
+-- ID when there is one, else by name.
+local function ReadBuff(name, spellID)
+	local data
+	if spellID and C_UnitAuras.GetPlayerAuraBySpellID then
+		data = C_UnitAuras.GetPlayerAuraBySpellID(spellID)
+	else
+		data = C_UnitAuras.GetAuraDataBySpellName("player", name, "HELPFUL")
+	end
 	if not data then
 		return false
 	end
@@ -240,7 +264,7 @@ end
 
 local function ReadEntry(entry, now)
 	local ok, present, icon, expiration, applications = RG.GuardedRead("Reading " .. entry.name,
-		RG.AuraSecret(entry.name), ReadBuff, entry.name)
+		RG.AuraSecret(entry.secretQuery), ReadBuff, entry.name, entry.spellID)
 	entry.readable = ok == true
 	if not ok then
 		-- Unknown: a proc on display runs out on its last known timer.

@@ -75,7 +75,7 @@ local function BuildPanel()
 
 	Header("Procs", "Buffs are matched by their English name. Add any other buff with /runeglow add <name>.")
 	for _, known in ipairs(RG.KNOWN) do
-		Checkbox("TRACK_" .. known.key, known.label, known.tooltip, true,
+		Checkbox("TRACK_" .. known.key, known.label, known.tooltip, not known.off,
 			function() return RG.db.tracked[known.key] end,
 			function(v) RG.db.tracked[known.key] = v end)
 	end

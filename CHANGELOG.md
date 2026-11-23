@@ -4,9 +4,12 @@
 
 First release.
 
-- **One icon per proc**, with the countdown inside it and the proc's name above: Revelation, Insight and
-  Recovery (weapon enchants), Molten, Frozen and Dormant Heart of the Mountain (trinkets) and Holy
-  Strength (Crusader). Icons pulse while the proc is up and show a stack count when there is one.
+- **One icon per proc**, with the countdown inside it and the proc's name above: Revelation and Insight
+  (weapon enchants), Molten Fury, Chthonic Power and Eternal Power (the Heart of the Mountain trinkets)
+  and Holy Strength (Crusader). Every icon is the buff's own icon from the game. Icons pulse while the
+  proc is up and show a stack count when there is one.
+- Built-in procs are found by spell ID, so they work in any client language. Recovery is listed but off
+  by default: it is an instant heal with no buff to show.
 - **A shared row** of smaller icons, with the timer on the icon, for procs you take off their own icon
   and for any buff you add with `/runeglow add <name>`.
 - **Options** under *Options > AddOns > Runeglow*: enable, lock, preview, reset positions, which procs to
