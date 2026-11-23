@@ -2,9 +2,19 @@
 
 ## 1.0.0
 
-- First release.
-- A movable icon with the countdown inside for each proc: Revelation, Insight and Recovery (weapon
-  enchants), Molten, Frozen and Dormant Heart of the Mountain (trinkets) and Holy Strength (Crusader).
-- Any proc can move into a shared row of smaller icons instead, along with any other buff you add with
-  `/runeglow add <name>`.
-- `/runeglow scan` lists the buffs on you by name.
+First release.
+
+- **One icon per proc**, with the countdown inside it and the proc's name above: Revelation, Insight and
+  Recovery (weapon enchants), Molten, Frozen and Dormant Heart of the Mountain (trinkets) and Holy
+  Strength (Crusader). Icons pulse while the proc is up and show a stack count when there is one.
+- **A shared row** of smaller icons, with the timer on the icon, for procs you take off their own icon
+  and for any buff you add with `/runeglow add <name>`.
+- **Options** under *Options > AddOns > Runeglow*: enable, lock, preview, reset positions, which procs to
+  track and which get their own icon, icon sizes and scale.
+- **Positioning**: drag icons while unlocked; *Preview icons* (or `/runeglow preview`) shows them all with
+  a looping countdown. Changing the scale keeps every icon where you put it.
+- **Commands**: `/runeglow` (or `/rglow`) with `preview`, `lock`, `unlock`, `scale <0.5-2.0>`, `reset`,
+  `add`, `remove`, `list`, `scan`, `status` and `help`.
+- `/runeglow scan` lists the buffs on you by name, to find a proc's exact name.
+- Buffs the game hides from addons in combat are handled safely: an icon already showing keeps counting
+  down, and everything is checked again when combat ends.
