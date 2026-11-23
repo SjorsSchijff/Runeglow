@@ -57,6 +57,11 @@ Track any other buff with `/runeglow add <buff name>`.
 - **In combat the game may hide buffs from addons.** When that happens, an icon that is already showing
   keeps counting down on its last known timer, and everything is checked again when combat ends.
 
+## CurseForge page
+
+The project page text lives in `CURSEFORGE.md`, and its logo is `icon.png` (512×512). Neither goes into
+the addon package.
+
 ## Releasing
 
 Releases are built by [BigWigsMods/packager](https://github.com/BigWigsMods/packager) in
