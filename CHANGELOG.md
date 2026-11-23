@@ -4,7 +4,7 @@
 
 First release.
 
-- **One icon per proc**, with the countdown inside it and the proc's name above: Revelation and Insight
+- **One icon per proc**, with the countdown inside it (and, with *Show proc names*, its name above): Revelation and Insight
   (weapon enchants), Molten Fury, Chthonic Power and Eternal Power (the Heart of the Mountain trinkets)
   and Holy Strength (Crusader). Every icon is the buff's own icon from the game. Icons pulse while the
   proc is up and show a stack count when there is one.

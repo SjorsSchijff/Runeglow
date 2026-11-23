@@ -86,6 +86,9 @@ local function BuildPanel()
 			function() return RG.db.alerts[known.key].separate end,
 			function(v) RG.db.alerts[known.key].separate = v end)
 	end
+	Checkbox("SHOW_NAMES", "Show proc names", "Show the proc's name above its own icon.", defaults.showNames,
+		function() return RG.db.showNames end,
+		function(v) RG.db.showNames = v end)
 	Slider("ALERT_SIZE", "Own icon size", nil, defaults.alertSize, 32, 96, 4, "%d",
 		function() return RG.db.alertSize end,
 		function(v) RG.db.alertSize = v end)

@@ -101,6 +101,8 @@ local DEFAULTS = {
 	scale = 1,
 	-- Each proc's own icon.
 	alertSize = 48,
+	-- The proc's name above its own icon.
+	showNames = false,
 	-- The row's icons, and the timer under them.
 	iconSize = 32,
 	fontSize = 13,
@@ -370,7 +372,7 @@ local function LayoutRow(shown)
 end
 
 --------------------------------------------------------------------------------
--- Own icons: a dark frame with a 1px border and the name in capitals above,
+-- Own icons: a dark frame with a 1px border and, optionally, the name in capitals above,
 -- pulsing while shown, with the countdown in the middle of the icon.
 --------------------------------------------------------------------------------
 
@@ -452,6 +454,7 @@ local function ApplyAlert(alert, key)
 	RG.RestorePoint(alert, cfg.alerts[key].point)
 	alert:EnableMouse(not cfg.locked)
 	alert.title:SetFont(RG.FONT, 12, "OUTLINE")
+	alert.title:SetShown(cfg.showNames)
 	-- The countdown fills most of the icon, as on a cooldown.
 	alert.timer:SetFont(RG.FONT, math.max(10, math.floor(cfg.alertSize * 0.4)), "OUTLINE")
 	alert.count:SetFont(RG.FONT, math.max(10, math.floor(cfg.alertSize * 0.25)), "OUTLINE")

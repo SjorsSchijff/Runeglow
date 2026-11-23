@@ -24,8 +24,9 @@ Track any other buff with `/runeglow add <buff name>`.
 
 ## Features
 
-- **One icon per proc**: a dark frame with a violet border, the proc's name above it and the countdown
-  in the middle. It pulses while the proc is up and disappears when it ends.
+- **One icon per proc**: a dark frame with a violet border and the countdown in the middle. It pulses
+  while the proc is up and disappears when it ends. Tick **Show proc names** to put each proc's name
+  above its icon.
 - **Put each icon anywhere**: toggle **Preview icons** in Options (or run `/runeglow preview`) to show
   them all at once, drag them into place, then lock them with **Lock positions** or `/runeglow lock`.
 - **Or keep them together**: untick "Own icon" for a proc and it joins a compact row of smaller icons,
