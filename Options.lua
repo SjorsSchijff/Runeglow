@@ -25,9 +25,22 @@ local function Proxy(variable, varType, name, default, get, set)
 		end)
 end
 
+-- Register through SettingsInbound when available so layout.initializers stays untainted.
+local function AddInitializer(initializer)
+	if Settings.RegisterInitializer then
+		Settings.RegisterInitializer(category, initializer)
+	else
+		layout:AddInitializer(initializer)
+	end
+end
+
 local function Checkbox(variable, name, tooltip, default, get, set)
 	local setting = Proxy(variable, Settings.VarType.Boolean, name, default, get, set)
-	Settings.CreateCheckbox(category, setting, tooltip)
+	if Settings.CreateCheckboxInitializer and Settings.RegisterInitializer then
+		AddInitializer(Settings.CreateCheckboxInitializer(setting, nil, tooltip))
+	else
+		Settings.CreateCheckbox(category, setting, tooltip)
+	end
 end
 
 local function Slider(variable, name, tooltip, default, minimum, maximum, step, format, get, set)
@@ -36,16 +49,23 @@ local function Slider(variable, name, tooltip, default, minimum, maximum, step, 
 	options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value)
 		return format:format(value)
 	end)
-	Settings.CreateSlider(category, setting, options, tooltip)
+	if Settings.CreateSliderInitializer and Settings.RegisterInitializer then
+		AddInitializer(Settings.CreateSliderInitializer(setting, options, tooltip))
+	else
+		Settings.CreateSlider(category, setting, options, tooltip)
+	end
 end
 
 local function Header(text, tooltip)
-	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(text, tooltip))
+	AddInitializer(CreateSettingsListSectionHeaderInitializer(text, tooltip))
 end
 
 local function Button(name, buttonText, tooltip, onClick)
 	if CreateSettingsButtonInitializer then
-		layout:AddInitializer(CreateSettingsButtonInitializer(name, buttonText, onClick, tooltip, true))
+		-- addSearchTags must be false: CreateSettingsButtonInitializer calls
+		-- AddSearchTags outside SettingsInbound, tainting initializer.searchTags
+		-- and breaking Blizzard's Settings search bar (e.g. IsUserOAuthed).
+		AddInitializer(CreateSettingsButtonInitializer(name, buttonText, onClick, tooltip, false))
 	end
 end
 
