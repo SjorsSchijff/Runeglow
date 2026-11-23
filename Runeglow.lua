@@ -365,8 +365,8 @@ local function LayoutRow(shown)
 	-- At least one slot wide, so there is always something to drag in preview.
 	local slots = math.max(#shown, 1)
 	row:SetSize(slots * cfg.iconSize + (slots - 1) * GAP, cfg.iconSize)
-	-- Only catch mouse clicks when unlocked AND actually visible (preview or active icons).
-	row:EnableMouse(not cfg.locked and (testMode or #shown > 0))
+	-- Only catch mouse clicks when unlocked and there are icons to drag.
+	row:EnableMouse(not cfg.locked and #shown > 0)
 end
 
 --------------------------------------------------------------------------------
@@ -400,7 +400,9 @@ end
 -- Named Runeglow_<Key> ("Runeglow_Revelation").
 local function BuildAlert(key)
 	local frame = CreateFrame("Frame", "Runeglow_" .. key:gsub("^%l", string.upper), UIParent)
-	frame:SetFrameStrata("HIGH")
+	-- MEDIUM, with the rest of the HUD: HIGH would draw over the options
+	-- window and other HIGH panels while the preview is on.
+	frame:SetFrameStrata("MEDIUM")
 	frame:Hide()
 	RG.MakeMovable(frame, function()
 		return RG.db.alerts[key]
@@ -521,8 +523,9 @@ local function Redraw()
 	row:Show()
 
 	if testMode then
-		row.backdrop:Show()
 		local shown, byKey = PreviewEntries()
+		-- An empty row has nothing to place, so no backdrop either.
+		row.backdrop:SetShown(#shown > 0)
 		LayoutRow(shown)
 		ShowAlerts(byKey)
 		return
