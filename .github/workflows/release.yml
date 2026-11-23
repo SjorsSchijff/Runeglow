@@ -1,0 +1,35 @@
+# Builds Runeglow-<version>.zip and publishes it whenever a version tag is
+# pushed (git tag v1.0.1 && git push origin v1.0.1):
+#   - always as a GitHub release, with CHANGELOG.md as its notes
+#   - to CurseForge once the TOC has "## X-Curse-Project-ID: <id>" and the
+#     repository has a CF_API_KEY secret
+# The tag becomes the version: @project-version@ in Runeglow.toc is replaced.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The packager reads the tag history for the version.
+          fetch-depth: 0
+
+      - name: Install luacheck
+        run: sudo apt-get update && sudo apt-get install -y lua-check
+      - name: Lint
+        run: luacheck .
+
+      - name: Package and upload
+        uses: BigWigsMods/packager@v2

@@ -1,0 +1,11 @@
+package-as: Runeglow
+
+ignore:
+  - README.md
+  - .luacheckrc
+  - .github
+  - tests
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown

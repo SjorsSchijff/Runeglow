@@ -1,0 +1,14 @@
+## Interface: 16001
+## Title: Runeglow
+## Notes: A glowing, movable icon with a countdown for every enchant and trinket proc on you: Revelation, Insight, Recovery, the Heart of the Mountain trinkets and Crusader.
+## Author: Sjors
+## Version: @project-version@
+## SavedVariables: RuneglowDB
+## IconTexture: Interface\Icons\Spell_Holy_SurgeOfLight
+## Category: Combat
+# Uncomment once the CurseForge project exists, with its ID from the project page:
+# ## X-Curse-Project-ID: 000000
+
+Core.lua
+Runeglow.lua
+Options.lua
